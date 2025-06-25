@@ -173,8 +173,8 @@ class ResumeExtractor {
             this.displayResults(data);
             
         } catch (error) {
-            console.error('Error extracting data:', error);
-            //this.showError('Failed to extract data. Please make sure the server is running and try again.');
+            // console.error('Error extracting data:', error);
+            // this.showError('Failed to extract data. Please make sure the server is running and try again.');
         } finally {
             this.hideLoading();
         }
