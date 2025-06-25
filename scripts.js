@@ -200,7 +200,7 @@ class ResumeExtractor {
         const format = 'xlsx';
         
         try {
-            const response = await fetch('http://localhost:8000/download-data', {
+            const response = await fetch('https://resume-info-extractor.up.railway.app/download-data', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
