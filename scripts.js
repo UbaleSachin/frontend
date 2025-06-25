@@ -159,7 +159,7 @@ class ResumeExtractor {
                 formData.append('files', file);
             });
 
-            const response = await fetch('https://resume-info-extractor-test.up.railway.app/extract-resume', {
+            const response = await fetch('https://resume-info-extractor.up.railway.app/extract-resume', {
                 method: 'POST',
                 body: formData
             });
