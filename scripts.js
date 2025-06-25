@@ -182,7 +182,7 @@ class ResumeExtractor {
 
     displayResults(data) {
         const resultsSection = document.getElementById('resultsSection');
-        const dataPreview = document.getElementById('dataPreview');
+        // const dataPreview = document.getElementById('dataPreview');
         
         resultsSection.style.display = 'block';
         resultsSection.classList.add('fade-in');
