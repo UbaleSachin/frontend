@@ -13,22 +13,28 @@
             <p>Upload resumes in multiple formats and extract structured data</p>
         </header>
 
-        <div class="upload-section">
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">📄</div>
-                <h3>Drop your resume files here</h3>
-                <p>or click to browse</p>
-                <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.xlsx,.xls,.txt">
-                <div class="supported-formats">
-                    <span>Supported formats: PDF, DOC, DOCX, XLS, XLSX, TXT</span>
+        <div class="main-flex">
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📄</div>
+                    <h3>Drop your resume files here</h3>
+                    <p>or click to browse</p>
+                    <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.xlsx,.xls,.txt">
+                    <div class="supported-formats">
+                        <span>Supported formats: PDF, DOC, DOCX, XLS, XLSX, TXT</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="files-preview" id="filesPreview" style="display: none;">
-            <h3>Selected Files</h3>
-            <div class="files-list" id="filesList"></div>
-            <button class="btn btn-primary" id="extractBtn">Extract Data</button>
+            <div class="files-preview" id="filesPreview" style="display: none;">
+                <h3>Selected Files</h3>
+                <div class="files-list" id="filesList"></div>
+                <div id="filePreviews"></div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" id="extractBtn">Extract Data</button>
+                    <button class="btn btn-danger" id="removeAllBtn">Remove All</button>
+                </div>
+            </div>
         </div>
 
         <div class="loading" id="loading" style="display: none;">
@@ -41,7 +47,7 @@
             <div class="download-options">
                 <button class="btn btn-success" id="downloadBtn">Download Excel</button>
             </div>
-            <!--div class="data-preview" id="dataPreview"></div> -->
+            <div class="data-preview" id="dataPreview"></div>
         </div>
 
         <div class="error-message" id="errorMessage" style="display: none;">
