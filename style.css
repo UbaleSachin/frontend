@@ -16,15 +16,16 @@ body {
 }
 
 .container {
-    max-width: 1200px;
-    width: 100%;
+    max-width: 1600px;   /* Was 1200px */
+    width: 95vw;         /* Use more of the viewport width */
+    min-height: 90vh;    /* Take up most of the viewport height */
     margin: 0 auto;
-    padding: 20px;
+    padding: 40px 40px;  /* More padding */
     background: rgba(255, 255, 255, 0.15);
-    border-radius: 25px;
+    border-radius: 35px; /* More rounded */
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
@@ -55,7 +56,8 @@ header p {
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 25px;
-    padding: 70px 20px;
+    padding: 100px 30px; /* Was 70px 20px */
+    font-size: 1.2rem;
     text-align: center;
     cursor: pointer;
     transition: all 0.4s ease;
@@ -123,7 +125,8 @@ header p {
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 20px;
-    padding: 35px;
+    padding: 45px;       /* Was 35px */
+    min-height: 500px;
     margin-bottom: 30px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(15px);
@@ -137,6 +140,9 @@ header p {
 
 .files-list {
     margin-bottom: 20px;
+    max-height: 350px;   /* Adjust height as needed for 5 items */
+    overflow-y: auto;
+    padding-right: 8px;  /* Space for scrollbar */
 }
 
 .file-item {
@@ -233,6 +239,16 @@ header p {
     box-shadow: 0 8px 20px rgba(86, 171, 47, 0.5);
 }
 
+.btn-danger {
+    background: linear-gradient(45deg, #ff4757, #ff6b81);
+}
+
+.btn-danger:hover {
+    background: linear-gradient(45deg, #ff3742, #ff6b81);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(255, 71, 87, 0.3);
+}
+
 .loading {
     text-align: center;
     padding: 50px;
@@ -268,7 +284,8 @@ header p {
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 20px;
-    padding: 35px;
+    padding: 45px;       /* Was 35px */
+    min-height: 500px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(15px);
 }
@@ -325,10 +342,11 @@ header p {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 25px;
-    max-height: 450px;
+    max-height: 600px;
     overflow-y: auto;
+    overflow-x: auto;
     font-family: 'Fira Code', 'Courier New', monospace;
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     line-height: 1.7;
     white-space: pre-wrap;
     color: #333; /* Text to dark gray */
@@ -380,7 +398,31 @@ header p {
     text-shadow: none; /* Removed text shadow for dark text */
 }
 
-@media (max-width: 768px) {
+.main-flex {
+    display: flex;
+    gap: 60px; /* More gap between sections */
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.upload-section, .files-preview {
+    flex: 1 1 0;
+    min-width: 400px;    /* Was 320px */
+    max-width: 600px;    /* Was 480px */
+    min-height: 500px;   /* Ensure sections are taller */
+}
+
+@media (max-width: 900px) {
+    .main-flex {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .upload-section, .files-preview {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 1600px) {
     .container {
         padding: 15px;
         border-radius: 15px;
@@ -431,4 +473,48 @@ header p {
 @keyframes slideIn {
     from { transform: translateX(-100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
+}
+
+@media (min-width: 1600px) {
+    .container {
+        max-width: 1800px;
+        padding: 60px 80px;
+    }
+    .upload-section, .files-preview {
+        min-width: 500px;
+        max-width: 700px;
+    }
+}
+
+/* Preview Table Styles */
+.data-preview table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 1.05rem;
+    
+}
+
+.data-preview th, .data-preview td {
+    padding: 12px 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.data-preview th {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.data-preview tr:nth-child(even) {
+    background: rgba(102, 126, 234, 0.07);
+}
+
+.data-preview tr:hover {
+    background: #f0f4ff;
 }
