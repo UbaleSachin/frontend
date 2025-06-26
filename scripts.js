@@ -10,9 +10,20 @@ class ResumeExtractor {
         const fileInput = document.getElementById('fileInput');
         const extractBtn = document.getElementById('extractBtn');
         const downloadBtn = document.getElementById('downloadBtn');
+        const removeAllBtn = document.getElementById('removeAllBtn');
 
-        // File upload events
-        uploadArea.addEventListener('click', () => fileInput.click());
+        // Prevent file dialog from reopening after cancel
+        fileInput.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Only open file dialog on direct click, not on drop
+        uploadArea.addEventListener('click', (e) => {
+            if (e.target === fileInput) return; // Already handled
+            fileInput.value = ''; // Reset so selecting the same file twice works
+            fileInput.click();
+        });
+
         fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
 
         // Drag and drop events
@@ -23,6 +34,12 @@ class ResumeExtractor {
         // Button events
         extractBtn.addEventListener('click', () => this.extractData());
         downloadBtn.addEventListener('click', () => this.downloadData());
+        removeAllBtn.addEventListener('click', () => this.removeAllFiles());
+    }
+
+    removeAllFiles() {
+        this.selectedFiles = [];
+        this.displaySelectedFiles();
     }
 
     handleDragOver(e) {
@@ -113,6 +130,10 @@ class ResumeExtractor {
                 </div>
                 <button class="remove-file" onclick="resumeExtractor.removeFile(${index})">×</button>
             `;
+
+            fileItem.querySelector('.remove-file').addEventListener('click', () => {
+                this.removeFile(index);
+            });
             
             filesList.appendChild(fileItem);
         });
@@ -173,8 +194,8 @@ class ResumeExtractor {
             this.displayResults(data);
             
         } catch (error) {
-            // console.error('Error extracting data:', error);
-            // this.showError('Failed to extract data. Please make sure the server is running and try again.');
+           console.error('Error extracting data:', error);
+           this.showError('Failed to extract data. Please make sure the server is running and try again.');
         } finally {
             this.hideLoading();
         }
@@ -182,13 +203,45 @@ class ResumeExtractor {
 
     displayResults(data) {
         const resultsSection = document.getElementById('resultsSection');
-        // const dataPreview = document.getElementById('dataPreview');
+        const dataPreview = document.getElementById('dataPreview');
         
         resultsSection.style.display = 'block';
         resultsSection.classList.add('fade-in');
         
         // Display formatted JSON data
-        dataPreview.textContent = JSON.stringify(data, null, 2);
+        // dataPreview.textContent = JSON.stringify(data, null, 2);
+
+        // Show a readable preview of each resume
+        if (data && data.extracted_data && data.extracted_data.length > 0) {
+            // Build a table preview
+            let table = '<table style="width:100%;border-collapse:collapse;"><thead><tr>';
+            table += '<th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Skills</th><th>Education</th><th>Experience</th><th>Location</th><th>Designation</th></tr></thead><tbody>';
+            data.extracted_data.forEach((resume, idx) => {
+                table += `<tr>
+                    <td>${idx + 1}</td>
+                    <td>${resume.personal_info?.name || ''}</td>
+                    <td>${resume.personal_info?.email || ''}</td>
+                    <td>${resume.personal_info?.phone || ''}</td>
+                    <td>${resume.personal_info?.location || ''}</td>
+                    <td>${resume.personal_info?.designation || ''}</td>
+                    <td>${Array.isArray(resume.skills) ? resume.skills.join(', ') : (resume.skills || '')}</td>
+                    <td>${
+                        Array.isArray(resume.education)
+                            ? resume.education.map(e => Object.values(e).join(', ')).join(' | ')
+                            : (resume.education || '')
+                    }</td>
+                    <td>${
+                        Array.isArray(resume.experience)
+                            ? resume.experience.map(e => Object.values(e).join(', ')).join(' | ')
+                            : (resume.experience || '')
+                    }</td>
+                </tr>`;
+            });
+            table += '</tbody></table>';
+            dataPreview.innerHTML = table;
+        } else {
+            dataPreview.innerHTML = '<em>No data extracted.</em>';
+        }
     }
 
     async downloadData() {
@@ -244,13 +297,16 @@ class ResumeExtractor {
 
     showLoading() {
         document.getElementById('loading').style.display = 'block';
-        document.getElementById('filesPreview').style.display = 'none';
-        document.getElementById('resultsSection').style.display = 'none';
+        // document.getElementById('filesPreview').style.display = 'none';
+        // document.getElementById('resultsSection').style.display = 'none';
+        document.getElementById('extractBtn').style.display = 'none';
+        document.getElementById('removeAllBtn').disabled = true;
     }
 
     hideLoading() {
         document.getElementById('loading').style.display = 'none';
-        document.getElementById('filesPreview').style.display = 'block';
+        document.getElementById('extractBtn').style.display = '';
+        document.getElementById('removeAllBtn').disabled = false;
     }
 
     showError(message) {
