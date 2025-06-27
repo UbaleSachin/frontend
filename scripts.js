@@ -16,7 +16,8 @@ class ResumeExtractor {
         const generateBtn = document.getElementById('generateBtn');
 
         if (generateBtn) {
-            generateBtn.addEventListener('click', async () => {
+            generateBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
                 // Call both extractData and extractJobDescription in sequence
                 await this.extractData();
                 await this.extractJobDescription();
@@ -62,7 +63,10 @@ class ResumeExtractor {
             downloadBtn.addEventListener('click', () => this.downloadData());
         }
         if (removeAllBtn) {
-            removeAllBtn.addEventListener('click', () => this.removeAllFiles());
+            removeAllBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent click from bubbling to uploadArea
+                this.removeAllFiles();
+            });
         }
     }
 
@@ -225,36 +229,6 @@ class ResumeExtractor {
         }
     }
 
-    updateJobDescriptionPreview() {
-        const jdInput = document.getElementById('jdInput');
-        let jdPreview = document.getElementById('jdPreview');
-        
-        if (!jdInput) return;
-        
-        // Create preview if it doesn't exist
-        if (!jdPreview) {
-            this.createJobDescriptionPreview();
-            jdPreview = document.getElementById('jdPreview');
-        }
-        
-        const text = jdInput.value.trim();
-        if (text) {
-            const wordCount = text.split(/\s+/).length;
-            const charCount = text.length;
-            jdPreview.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <strong style="color: #28a745;">✓ Job Description Added</strong>
-                    <small style="color: #6c757d;">${wordCount} words, ${charCount} characters</small>
-                </div>
-                <div style="max-height: 80px; overflow-y: auto; padding: 8px; background: white; border-radius: 4px; border: 1px solid #dee2e6;">
-                    ${text.substring(0, 300)}${text.length > 300 ? '...' : ''}
-                </div>
-            `;
-            jdPreview.style.display = 'block';
-        } else {
-            jdPreview.style.display = 'none';
-        }
-    }
 
     removeAllFiles() {
         this.selectedFiles = [];
@@ -358,14 +332,24 @@ class ResumeExtractor {
                         <p>${this.formatFileSize(file.size)} • ${file.type || 'Unknown type'}</p>
                     </div>
                 </div>
-                <button class="remove-file" onclick="window.resumeExtractor.removeFile(${index})">×</button>
+                <button class="remove-file" type="button">×</button>
             `;
+
+            // Attach event listener to the remove button
+            const removeBtn = fileItem.querySelector('.remove-file');
+            if (removeBtn) {
+                removeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.removeFile(e, index);
+                });
+            }
             
             filesList.appendChild(fileItem);
         });
     }
 
-    removeFile(index) {
+    removeFile(event, index) {
+        if (event) event.stopPropagation();
         this.selectedFiles.splice(index, 1);
         this.displaySelectedFiles();
     }
@@ -445,7 +429,7 @@ class ResumeExtractor {
 
             // If you want to call /extract-job-description, do it here, but don't overwrite jobDescriptionData with the response object
 
-            this.showSuccess('Job description processed successfully!');
+            // this.showSuccess('Job description processed successfully!');
         } catch (error) {
             console.error('Error extracting job description:', error);
             this.showError('Failed to extract job description. Please try again.');
@@ -509,7 +493,7 @@ class ResumeExtractor {
             candidateFitSection.style.marginBottom = '30px';
             candidateFitSection.innerHTML = `
                 <h3 style="margin-bottom: 15px;">Candidate Fit Analysis</h3>
-                <div id="candidateFitContent" style="background: #f8f9fa; border-radius: 8px; padding: 18px; border: 1px solid #e9ecef; font-size: 1.05rem;"></div>
+                <div id="candidateFitContent"></div>
             `;
             // Insert before download options
             const downloadOptions = document.querySelector('.download-options');
@@ -525,23 +509,24 @@ class ResumeExtractor {
             if (data && data.fit_result) {
                 const fitResult = data.fit_result;
                 let html = `
-                    <div style="margin-bottom: 15px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <strong style="font-size: 1.1em;">Fit Score: ${fitResult.fit_percentage}%</strong>
-                            <div style="width: 200px; background: #e9ecef; border-radius: 10px; height: 20px;">
-                                <div style="width: ${fitResult.fit_percentage}%; background: ${fitResult.fit_percentage >= 70 ? '#28a745' : fitResult.fit_percentage >= 50 ? '#ffc107' : '#dc3545'}; height: 100%; border-radius: 10px; transition: width 0.3s ease;"></div>
-                            </div>
+                    <div class="fit-score-container">
+                        <div class="fit-score-text">Fit Score: ${fitResult.fit_percentage}%</div>
+                        <div class="fit-score-bar-container">
+                            <div class="fit-score-bar" style="width: ${fitResult.fit_percentage}%; background-position: ${this.getFitScoreBarPosition(fitResult.fit_percentage)}% 0;"></div>
+                            <div class="fit-score-percentage">${fitResult.fit_percentage}%</div>
                         </div>
-                        <p style="margin-bottom: 15px; line-height: 1.5;">${fitResult.summary}</p>
+                    </div>
+                    <div class="fit-summary">
+                        ${fitResult.summary}
                     </div>
                 `;
 
                 if (fitResult.key_matches && fitResult.key_matches.length > 0) {
                     html += `
-                        <div style="margin-bottom: 15px;">
-                            <strong style="color: #28a745; margin-bottom: 8px; display: block;">✓ Key Matches:</strong>
-                            <ul style="margin: 0; padding-left: 20px; list-style-type: disc;">
-                                ${fitResult.key_matches.map(match => `<li style="margin-bottom: 4px;">${match}</li>`).join('')}
+                        <div class="fit-matches">
+                            <strong>✓ Key Matches</strong>
+                            <ul>
+                                ${fitResult.key_matches.map(match => `<li>${match}</li>`).join('')}
                             </ul>
                         </div>
                     `;
@@ -549,20 +534,40 @@ class ResumeExtractor {
 
                 if (fitResult.key_gaps && fitResult.key_gaps.length > 0) {
                     html += `
-                        <div>
-                            <strong style="color: #dc3545; margin-bottom: 8px; display: block;">⚠ Key Gaps:</strong>
-                            <ul style="margin: 0; padding-left: 20px; list-style-type: disc;">
-                                ${fitResult.key_gaps.map(gap => `<li style="margin-bottom: 4px;">${gap}</li>`).join('')}
+                        <div class="fit-gaps">
+                            <strong>⚠ Key Gaps</strong>
+                            <ul>
+                                ${fitResult.key_gaps.map(gap => `<li>${gap}</li>`).join('')}
                             </ul>
                         </div>
                     `;
                 }
 
                 fitContent.innerHTML = html;
+                
+                // Animate the progress bar after a short delay
+                setTimeout(() => {
+                    const progressBar = fitContent.querySelector('.fit-score-bar');
+                    if (progressBar) {
+                        progressBar.style.width = '0%';
+                        setTimeout(() => {
+                            progressBar.style.width = `${fitResult.fit_percentage}%`;
+                        }, 100);
+                    }
+                }, 200);
+                
             } else {
                 fitContent.innerHTML = '<p style="color: #dc3545;">No candidate fit analysis available.</p>';
             }
         }
+    }
+
+    // Helper function to determine the background position for the gradient bar
+    getFitScoreBarPosition(percentage) {
+        if (percentage <= 25) return 0;
+        if (percentage <= 50) return 25;
+        if (percentage <= 75) return 50;
+        return 75;
     }
 
     displayResults(data) {
