@@ -439,45 +439,32 @@ class ResumeExtractor {
     }
 
     async fetchCandidateFit() {
-        // Check if we have both resume and job description data
         if (!this.extractedData || !this.jobDescriptionData) {
             this.showError('Please extract both resume data and job description first.');
             return;
         }
-
         this.hideError();
-        
+
         try {
-            // Fix: Send the first resume from the extracted data array
-            const resumeDataToSend = this.extractedData.extracted_data && this.extractedData.extracted_data.length > 0 
-                ? this.extractedData.extracted_data[0] // Send first resume for evaluation
-                : this.extractedData;
-
-            console.log('Sending resume data:', resumeDataToSend);
-            console.log('Sending job description:', this.jobDescriptionData);
-
+            // Send all resumes for evaluation
+            const resumes = this.extractedData.extracted_data || [];
             const response = await fetch('https://resume-info-extractor.up.railway.app/candidate-fit', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    resume_data: resumeDataToSend,
+                    resume_data: resumes,
                     job_description_data: this.jobDescriptionData
                 })
             });
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('Server response:', errorText);
                 throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
             }
 
             const data = await response.json();
-            console.log('Candidate fit response:', data);
             this.displayCandidateFit(data);
         } catch (error) {
-            console.error('Error fetching candidate fit:', error);
             this.showError(`Failed to fetch candidate fit summary: ${error.message}`);
         }
     }
@@ -485,7 +472,6 @@ class ResumeExtractor {
     displayCandidateFit(data) {
         let candidateFitSection = document.getElementById('candidateFitSection');
         if (!candidateFitSection) {
-            // Create the section above the download button
             const resultsSection = document.getElementById('resultsSection');
             candidateFitSection = document.createElement('div');
             candidateFitSection.id = 'candidateFitSection';
@@ -495,7 +481,6 @@ class ResumeExtractor {
                 <h3 style="margin-bottom: 15px;">Candidate Fit Analysis</h3>
                 <div id="candidateFitContent"></div>
             `;
-            // Insert before download options
             const downloadOptions = document.querySelector('.download-options');
             if (resultsSection && downloadOptions) {
                 resultsSection.insertBefore(candidateFitSection, downloadOptions);
@@ -505,60 +490,64 @@ class ResumeExtractor {
         }
 
         const fitContent = document.getElementById('candidateFitContent');
-        if (fitContent) {
-            if (data && data.fit_result) {
-                const fitResult = data.fit_result;
-                let html = `
-                    <div class="fit-score-container">
-                        <div class="fit-score-text">Fit Score: ${fitResult.fit_percentage}%</div>
-                        <div class="fit-score-bar-container">
-                            <div class="fit-score-bar" style="width: ${fitResult.fit_percentage}%; background-position: ${this.getFitScoreBarPosition(fitResult.fit_percentage)}% 0;"></div>
-                            <div class="fit-score-percentage">${fitResult.fit_percentage}%</div>
+        if (!fitContent) return;
+
+        // Support multiple results
+        const fitResults = data && (data.fit_results || (data.fit_result && [data.fit_result]));
+        if (fitResults && fitResults.length > 0) {
+            let html = `<div class="fit-list">`;
+            fitResults.forEach((fitResult, idx) => {
+                const candidateName = fitResult.candidate_name || `Candidate ${idx + 1}`;
+                html += `
+                    <div class="fit-item" style="margin-bottom:18px;">
+                        <div class="fit-header" style="display:flex;align-items:center;cursor:pointer;gap:18px;padding:12px 0;" data-fit-index="${idx}">
+                            <span style="font-weight:700;font-size:1.1rem;">${candidateName}</span>
+                            <span class="fit-score-badge" style="margin-left:auto;background:#e9ecef;padding:6px 16px;border-radius:16px;font-weight:600;color:#333;">
+                                ${fitResult.fit_percentage}%
+                            </span>
+                            <span class="expand-arrow" style="margin-left:10px;transition:transform 0.2s;">&#9654;</span>
                         </div>
-                    </div>
-                    <div class="fit-summary">
-                        ${fitResult.summary}
+                        <div class="fit-details" style="display:none;padding:12px 0 0 0;">
+                            <div class="fit-summary" style="margin-bottom:12px;">${fitResult.summary || ''}</div>
+                            ${fitResult.key_matches && fitResult.key_matches.length > 0 ? `
+                                <div class="fit-matches" style="margin-bottom:10px;">
+                                    <strong>✓ Key Matches</strong>
+                                    <ul>
+                                        ${fitResult.key_matches.map(match => `<li>${match}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                            ${fitResult.key_gaps && fitResult.key_gaps.length > 0 ? `
+                                <div class="fit-gaps">
+                                    <strong>⚠ Key Gaps</strong>
+                                    <ul>
+                                        ${fitResult.key_gaps.map(gap => `<li>${gap}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                        </div>
                     </div>
                 `;
+            });
+            html += `</div>`;
+            fitContent.innerHTML = html;
 
-                if (fitResult.key_matches && fitResult.key_matches.length > 0) {
-                    html += `
-                        <div class="fit-matches">
-                            <strong>✓ Key Matches</strong>
-                            <ul>
-                                ${fitResult.key_matches.map(match => `<li>${match}</li>`).join('')}
-                            </ul>
-                        </div>
-                    `;
-                }
-
-                if (fitResult.key_gaps && fitResult.key_gaps.length > 0) {
-                    html += `
-                        <div class="fit-gaps">
-                            <strong>⚠ Key Gaps</strong>
-                            <ul>
-                                ${fitResult.key_gaps.map(gap => `<li>${gap}</li>`).join('')}
-                            </ul>
-                        </div>
-                    `;
-                }
-
-                fitContent.innerHTML = html;
-                
-                // Animate the progress bar after a short delay
-                setTimeout(() => {
-                    const progressBar = fitContent.querySelector('.fit-score-bar');
-                    if (progressBar) {
-                        progressBar.style.width = '0%';
-                        setTimeout(() => {
-                            progressBar.style.width = `${fitResult.fit_percentage}%`;
-                        }, 100);
+            // Add expand/collapse logic
+            fitContent.querySelectorAll('.fit-header').forEach(header => {
+                header.addEventListener('click', function () {
+                    const details = this.parentElement.querySelector('.fit-details');
+                    const arrow = this.querySelector('.expand-arrow');
+                    if (details.style.display === 'none' || !details.style.display) {
+                        details.style.display = 'block';
+                        arrow.style.transform = 'rotate(90deg)';
+                    } else {
+                        details.style.display = 'none';
+                        arrow.style.transform = '';
                     }
-                }, 200);
-                
-            } else {
-                fitContent.innerHTML = '<p style="color: #dc3545;">No candidate fit analysis available.</p>';
-            }
+                });
+            });
+        } else {
+            fitContent.innerHTML = '<p style="color: #dc3545;">No candidate fit analysis available.</p>';
         }
     }
 
