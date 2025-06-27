@@ -109,6 +109,107 @@ header p {
     cursor: pointer;
 }
 
+/* Job Description Upload Area Styling */
+#jdUploadArea {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 25px;
+    padding: 50px 30px;
+    font-size: 1.2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    margin-bottom: 30px;
+    min-height: 500px; /* Same height as resume upload area */
+}
+
+#jdUploadArea:hover {
+    border-color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 45px rgba(0,0,0,0.2);
+}
+
+#jdUploadArea.dragover {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(1.03);
+}
+
+#jdUploadArea h3,
+#jdUploadArea p {
+    color: #333;
+    text-shadow: none;
+    margin-bottom: 15px;
+}
+
+#jdInput {
+    width: 100%;
+    min-height: 300px;
+    padding: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #333;
+    font-size: 1rem;
+    line-height: 1.6;
+    resize: vertical;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-family: inherit;
+    outline: none;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+#jdInput:focus {
+    border-color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+#jdInput::placeholder {
+    color: rgba(0, 0, 0, 0.5);
+    font-style: italic;
+}
+
+/* Job Description Preview Styling */
+#jdPreview {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    padding: 18px;
+    margin-top: 20px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    color: #333;
+}
+
+#jdPreview strong {
+    color: #28a745;
+    text-shadow: none;
+}
+
+#jdPreview small {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+#jdPreview > div:last-child {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    padding: 12px;
+    color: #333;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
 .supported-formats {
     background: rgba(255, 255, 255, 0.1);
     padding: 12px 25px;
@@ -296,6 +397,177 @@ header p {
     text-shadow: none; /* Removed text shadow for dark text */
 }
 
+/* Candidate Fit Analysis Section Styling */
+.candidate-fit-section {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 20px;
+    padding: 45px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    margin-bottom: 30px;
+}
+
+.candidate-fit-section h3 {
+    color: #333;
+    text-shadow: none;
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    font-weight: 700;
+}
+
+#candidateFitContent {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    padding: 25px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    color: #333;
+}
+
+/* Modern Fit Score Bar */
+.fit-score-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+}
+
+.fit-score-text {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #333;
+    text-shadow: none;
+}
+
+.fit-score-bar-container {
+    position: relative;
+    width: 250px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.fit-score-bar {
+    height: 100%;
+    border-radius: 25px;
+    background: linear-gradient(90deg, #ff6b6b 0%, #ffd93d 40%, #6bcf7f 70%, #4ecdc4 100%);
+    background-size: 400% 100%;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.fit-score-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    right: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; right: 100%; }
+    100% { left: 100%; right: -100%; }
+}
+
+.fit-score-percentage {
+    position: absolute;
+    right: -60px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #333;
+    text-shadow: 0 1px 3px rgba(255,255,255,0.5);
+}
+
+/* Fit summary and details styling */
+.fit-summary {
+    margin-bottom: 25px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    line-height: 1.6;
+    font-size: 1.05rem;
+    color: #333;
+    backdrop-filter: blur(5px);
+}
+
+.fit-matches, .fit-gaps {
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+}
+
+.fit-matches {
+    background: rgba(40, 167, 69, 0.1);
+    border-left: 4px solid #28a745;
+}
+
+.fit-gaps {
+    background: rgba(220, 53, 69, 0.1);
+    border-left: 4px solid #dc3545;
+}
+
+.fit-matches strong {
+    color: #28a745;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.fit-gaps strong {
+    color: #dc3545;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.fit-matches ul, .fit-gaps ul {
+    margin: 0;
+    padding-left: 25px;
+    list-style-type: none;
+}
+
+.fit-matches li, .fit-gaps li {
+    margin-bottom: 8px;
+    position: relative;
+    color: #333;
+    line-height: 1.5;
+}
+
+.fit-matches li::before {
+    content: '✓';
+    position: absolute;
+    left: -20px;
+    color: #28a745;
+    font-weight: bold;
+}
+
+.fit-gaps li::before {
+    content: '•';
+    position: absolute;
+    left: -20px;
+    color: #dc3545;
+    font-weight: bold;
+}
+
 .download-options {
     display: flex;
     align-items: center;
@@ -419,6 +691,17 @@ header p {
     }
     .upload-section, .files-preview {
         max-width: 100%;
+    }
+    
+    .fit-score-container {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .fit-score-bar-container {
+        width: 100%;
+        max-width: 300px;
     }
 }
 
