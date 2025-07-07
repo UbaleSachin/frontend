@@ -406,7 +406,7 @@ class ResumeExtractor {
             this.selectedFiles.forEach((file, index) => {
                 formData.append('files', file);
             });
-            const response = await fetch('https://resume-info-extractor-test-test.up.railway.app/extract-resume', {
+            const response = await fetch('https://resume-info-extractor-test.up.railway.app/extract-resume', {
                 method: 'POST',
                 body: formData
             });
@@ -420,7 +420,7 @@ class ResumeExtractor {
             let extractedData = null;
             while (true) {
                 await new Promise(res => setTimeout(res, 3000)); // wait 3 seconds
-                const pollResp = await fetch(`https://resume-info-extractor-test-test.up.railway.app/extract-resume/${jobId}`);
+                const pollResp = await fetch(`https://resume-info-extractor-test.up.railway.app/extract-resume/${jobId}`);
                 const pollData = await pollResp.json();
                 if (pollData.status === 'completed') {
                     extractedData = pollData;
@@ -576,7 +576,7 @@ class ResumeExtractor {
         const format = 'xlsx';
         
         try {
-            const response = await fetch('https://resume-info-extractor-test-test.up.railway.app/download-data', {
+            const response = await fetch('https://resume-info-extractor-test.up.railway.app/download-data', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
