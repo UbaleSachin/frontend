@@ -406,7 +406,6 @@ class ResumeExtractor {
             this.selectedFiles.forEach((file, index) => {
                 formData.append('files', file);
             });
-            
             const response = await fetch('https://python-rms.onrender.com/extract-resume', {
                 method: 'POST',
                 body: formData
@@ -421,7 +420,7 @@ class ResumeExtractor {
             let extractedData = null;
             while (true) {
                 await new Promise(res => setTimeout(res, 3000)); // wait 3 seconds
-                const pollResp = await fetch(`https://python-rms.onrender.com/extract-resume-/${jobId}`);
+                const pollResp = await fetch(`https://python-rms.onrender.com/extract-resume/${jobId}`);
                 const pollData = await pollResp.json();
                 if (pollData.status === 'completed') {
                     extractedData = pollData;
@@ -473,6 +472,7 @@ class ResumeExtractor {
                             <th>Skills</th>
                             <th>Education</th>
                             <th>Experience</th>
+                            <th>Summary</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -490,6 +490,7 @@ class ResumeExtractor {
                 const experience = Array.isArray(resume.experience)
                     ? resume.experience.map(e => (typeof e === 'object' ? Object.values(e).filter(v => v).join(', ') : e)).join(' | ')
                     : (resume.experience || '');
+                const summary = resume.summary || "";
 
                 tableHtml += `
                     <tr>
@@ -502,6 +503,7 @@ class ResumeExtractor {
                         <td>${skills}</td>
                         <td>${education}</td>
                         <td>${experience}</td>
+                        <td>${summary}</td>
                     </tr>
                 `;
             });
