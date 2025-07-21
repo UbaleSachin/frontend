@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         fitContent.innerHTML = '<div class="loading"><div class="spinner"></div><p>Analyzing candidate fit...</p></div>';
         const resumes = extractedData.extracted_data || [];
-        const response = await fetch('https://python-rms-1.onrender.com/candidate-fit', {
+        const response = await fetch('https://python-rms.onrender.com/candidate-fit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         let fitData = null;
         while (true) {
             await new Promise(res => setTimeout(res, 3000));
-            const pollResp = await fetch(`https://python-rms-1.onrender.com/candidate-fit/${jobId}`);
+            const pollResp = await fetch(`https://python-rms.onrender.com/candidate-fit/${jobId}`);
             const pollData = await pollResp.json();
             if (pollData.status === 'completed') {
                 fitData = pollData;
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                     try {
                         // Send filteredResults to backend for Excel generation
-                        const response = await fetch('https://python-rms-1.onrender.com/download-fit-excel', {
+                        const response = await fetch('https://python-rms.onrender.com/download-fit-excel', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ fit_results: filteredResults })
